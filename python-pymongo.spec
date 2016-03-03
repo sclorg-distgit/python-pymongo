@@ -8,21 +8,24 @@
 %{?scl:%filter_setup}
 
 Name:           %{?scl_prefix}python-pymongo
-Version:        2.5.2
-Release:        4.sc1%{?dist}
+Version:        3.2.1
+Release:        1%{?dist}
 Summary:        Python driver for MongoDB
 
 Group:          Development/Languages
 # All code is ASL 2.0 except bson/time64*.{c,h} which is MIT
 License:        ASL 2.0 and MIT
 URL:            http://api.mongodb.org/python
-Source0:        http://pypi.python.org/packages/source/p/pymongo/pymongo-%{version}.tar.gz
+Source0:        https://github.com/mongodb/mongo-python-driver/archive/%{version}.tar.gz
+Patch01:        0001-Serverless-test-suite-workaround.patch
+Patch02:		0002-Changed-format-for-sphinx-1.1.3-compatibility.patch
 BuildRoot:      %{_tmppath}/%{pkg_name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:       %{?scl_prefix}python-bson = %{version}-%{release}
 
-BuildRequires:  %{?scl_prefix}python2-devel
+BuildRequires:  %{?scl_prefix}python-devel
 BuildRequires:  %{?scl_prefix}python-nose
 BuildRequires:  %{?scl_prefix}python-setuptools
+BuildRequires:  %{?scl_prefix}python-sphinx
 %{?scl:Requires: %scl_runtime}
 
 # Mongodb must run on a little-endian CPU (see bug #630898)
@@ -30,6 +33,13 @@ ExcludeArch:    ppc ppc64 %{sparc} s390 s390x
 
 %description
 The Python driver for MongoDB.
+
+%package doc
+Summary: Documentation for python-pymongo
+Group: Documentation
+
+%description doc
+Documentation for python-pymongo.
 
 %package gridfs
 Summary:        Python GridFS driver for MongoDB
@@ -49,38 +59,51 @@ to be lightweight, traversable, and efficient. BSON, like JSON, supports the
 embedding of objects and arrays within other objects and arrays.
 
 %prep
-%setup -q -n pymongo-%{version}
-rm -r pymongo.egg-info
+%setup -q -n mongo-python-driver-%{version}
+%patch01 -p1 -b .test
+%patch02 -p1
 
 %build
 %{?scl:scl enable %{scl} - << \EOF}
-%{__python} setup.py build
+CFLAGS="%{optflags}" %{__python} setup.py build
+pushd doc
+make html
+popd
 %{?scl:EOF}
 
 %install
 rm -rf %{buildroot}
-%{?scl:scl enable %{scl} "}
+%{?scl:scl enable %{scl} - << \EOF}
 %{__python} setup.py install --skip-build --root $RPM_BUILD_ROOT
-%{?scl:"}
+# Fix permissions
+chmod 755 %{buildroot}%{python_sitearch}/bson/*.so
+chmod 755 %{buildroot}%{python_sitearch}/pymongo/*.so
+%{?scl:EOF}
+
 
 %clean
 rm -rf %{buildroot}
 
+
 %files
 %defattr(-,root,root,-)
-%doc LICENSE PKG-INFO README.rst doc
+%doc LICENSE README.rst doc
 %{python_sitearch}/pymongo
 %{python_sitearch}/pymongo-%{version}-*.egg-info
 
 %files gridfs
 %defattr(-,root,root,-)
-%doc LICENSE PKG-INFO README.rst doc
+%doc LICENSE README.rst doc
 %{python_sitearch}/gridfs
 
 %files -n %{?scl_prefix}python-bson
 %defattr(-,root,root,-)
-%doc LICENSE PKG-INFO README.rst doc
+%doc LICENSE README.rst doc
 %{python_sitearch}/bson
+
+%files doc
+%doc LICENSE
+%doc doc/_build/html/*
 
 %check
 # Exclude tests that require an active MongoDB connection
@@ -99,10 +122,12 @@ exclude+='|^test_constants$'
 exclude+='|^test_contextlib$'
 exclude+='|^test_copy_db$'
 exclude+='|^test_cursor$'
+exclude+='|^test_crud$'
 exclude+='|^test_database$'
 exclude+='|^test_database_names$'
 exclude+='|^test_delegated_auth$'
 exclude+='|^test_disconnect$'
+exclude+='|^test_discovery_and_monitoring$'
 exclude+='|^test_document_class$'
 exclude+='|^test_drop_database$'
 exclude+='|^test_equality$'
@@ -142,6 +167,8 @@ exclude+='|^test_safe_insert$'
 exclude+='|^test_safe_update$'
 exclude+='|^test_schedule_refresh$'
 exclude+='|^test_server_disconnect$'
+exclude+='|^test_server_selection$'
+exclude+='|^test_server_selection_rtt$'
 exclude+='|^test_son_manipulator$'
 exclude+='|^test_threading$'
 exclude+='|^test_threads$'
@@ -151,14 +178,22 @@ exclude+='|^test_tz_aware$'
 exclude+='|^test_uri_options$'
 exclude+='|^test_use_greenlets$'
 exclude+='|^test_with_start_request$'
+exclude+='|^test_command_monitoring_spec$'
+exclude+='|^test_gridfs_spec$'
+exclude+='|^test_uri_spec$'
+exclude+='|^test_legacy_api$'
+exclude+='|^test_raw_bson$'
 exclude+=')'
-pushd test
 %{?scl:scl enable %{scl} '}
+pushd test
 nosetests --exclude="$exclude"
-%{?scl:'}
 popd
+%{?scl:'}
 
 %changelog
+* Thu Feb 11 2016 Charalampos Stratakis <cstratak@redhat.com> - 3.2.1-1
+- Update to 3.2.1 for rhscl 2.2
+
 * Tue Oct 15 2013 Robert Kuska <rkuska@redhat.com> - 2.5.2-4
 - Modify spec for rhscl build
 

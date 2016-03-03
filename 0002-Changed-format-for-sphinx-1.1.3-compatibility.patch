@@ -1,0 +1,123 @@
+From cdc24ebbe4d31e11ced51a6c4f038d2f038f3c1b Mon Sep 17 00:00:00 2001
+From: Charalampos Stratakis <cstratak@redhat.com>
+Date: Thu, 18 Feb 2016 18:36:43 +0100
+Subject: [PATCH] Changed format for sphinx 1.1.3 compatibility
+
+---
+ doc/api/pymongo/collection.rst | 51 ++++++++++--------------------------------
+ doc/api/pymongo/cursor.rst     | 15 ++-----------
+ 2 files changed, 14 insertions(+), 52 deletions(-)
+
+diff --git a/doc/api/pymongo/collection.rst b/doc/api/pymongo/collection.rst
+index bf53a7b..aaa8be6 100644
+--- a/doc/api/pymongo/collection.rst
++++ b/doc/api/pymongo/collection.rst
+@@ -10,16 +10,8 @@
+    .. autodata:: pymongo.GEOHAYSTACK
+    .. autodata:: pymongo.GEOSPHERE
+    .. autodata:: pymongo.HASHED
+-   .. autodata:: pymongo.TEXT
+ 
+-   .. autoclass:: pymongo.collection.ReturnDocument
+-
+-      .. autoattribute:: BEFORE
+-         :annotation:
+-      .. autoattribute:: AFTER
+-         :annotation:
+-
+-   .. autoclass:: pymongo.collection.Collection(database, name, create=False, **kwargs)
++   .. autoclass:: pymongo.collection.Collection(database, name[, create=False[, **kwargs]]])
+ 
+       .. describe:: c[name] || c.name
+ 
+@@ -31,46 +23,27 @@
+       .. autoattribute:: full_name
+       .. autoattribute:: name
+       .. autoattribute:: database
+-      .. autoattribute:: codec_options
+       .. autoattribute:: read_preference
+       .. autoattribute:: write_concern
+-      .. automethod:: with_options
+-      .. automethod:: bulk_write
+-      .. automethod:: insert_one
+-      .. automethod:: insert_many
+-      .. automethod:: replace_one
+-      .. automethod:: update_one
+-      .. automethod:: update_many
+-      .. automethod:: delete_one
+-      .. automethod:: delete_many
+-      .. automethod:: aggregate
+-      .. automethod:: find(filter=None, projection=None, skip=0, limit=0, no_cursor_timeout=False, cursor_type=CursorType.NON_TAILABLE, sort=None, allow_partial_results=False, oplog_replay=False, modifiers=None, manipulate=True)
+-      .. automethod:: find_one(filter_or_id=None, *args, **kwargs)
+-      .. automethod:: find_one_and_delete
+-      .. automethod:: find_one_and_replace(filter, replacement, projection=None, sort=None, return_document=ReturnDocument.BEFORE, **kwargs)
+-      .. automethod:: find_one_and_update(filter, update, projection=None, sort=None, return_document=ReturnDocument.BEFORE, **kwargs)
++      .. automethod:: insert(doc_or_docs[, manipulate=True[, safe=None[, check_keys=True[, continue_on_error=False[, **kwargs]]]]])
++      .. automethod:: save(to_save[, manipulate=True[, safe=None[, check_keys=True[, **kwargs]]]])
++      .. automethod:: update(spec, document[, upsert=False[, manipulate=False[, safe=None[, multi=False[, check_keys=True[, **kwargs]]]]]])
++      .. automethod:: remove([spec_or_id=None[, safe=None[, **kwargs]]])
++      .. automethod:: drop
++      .. automethod:: find([spec=None[, fields=None[, skip=0[, limit=0[, timeout=True[, snapshot=False[, tailable=False[, sort=None[, max_scan=None[, as_class=None[, slave_okay=False[, await_data=False[, partial=False[, manipulate=True[, read_preference=ReadPreference.PRIMARY[, **kwargs]]]]]]]]]]]]]]]])
++      .. automethod:: find_one([spec_or_id=None[, *args[, **kwargs]]])
+       .. automethod:: count
+-      .. automethod:: distinct
+       .. automethod:: create_index
+-      .. automethod:: create_indexes
++      .. automethod:: ensure_index
+       .. automethod:: drop_index
+       .. automethod:: drop_indexes
+       .. automethod:: reindex
+-      .. automethod:: list_indexes
+       .. automethod:: index_information
+-      .. automethod:: drop
+-      .. automethod:: rename
+       .. automethod:: options
++      .. automethod:: aggregate
+       .. automethod:: group
++      .. automethod:: rename
++      .. automethod:: distinct
+       .. automethod:: map_reduce
+       .. automethod:: inline_map_reduce
+-      .. automethod:: parallel_scan
+-      .. automethod:: initialize_unordered_bulk_op
+-      .. automethod:: initialize_ordered_bulk_op
+-      .. automethod:: insert(doc_or_docs, manipulate=True, check_keys=True, continue_on_error=False, **kwargs)
+-      .. automethod:: save(to_save, manipulate=True, check_keys=True, **kwargs)
+-      .. automethod:: update(spec, document, upsert=False, manipulate=False, multi=False, check_keys=True, **kwargs)
+-      .. automethod:: remove(spec_or_id=None, multi=True, **kwargs)
+       .. automethod:: find_and_modify
+-      .. automethod:: ensure_index
+-
+diff --git a/doc/api/pymongo/cursor.rst b/doc/api/pymongo/cursor.rst
+index 42624d2..a03f646 100644
+--- a/doc/api/pymongo/cursor.rst
++++ b/doc/api/pymongo/cursor.rst
+@@ -4,22 +4,11 @@
+ .. automodule:: pymongo.cursor
+    :synopsis: Tools for iterating over MongoDB query results
+ 
+-   .. autoclass:: pymongo.cursor.CursorType
+-
+-      .. autoattribute:: NON_TAILABLE
+-         :annotation:
+-      .. autoattribute:: TAILABLE
+-         :annotation:
+-      .. autoattribute:: TAILABLE_AWAIT
+-         :annotation:
+-      .. autoattribute:: EXHAUST
+-         :annotation:
+-
+-   .. autoclass:: pymongo.cursor.Cursor(collection, filter=None, projection=None, skip=0, limit=0, no_cursor_timeout=False, cursor_type=CursorType.NON_TAILABLE, sort=None, allow_partial_results=False, oplog_replay=False, modifiers=None, manipulate=True)
++   .. autoclass:: pymongo.cursor.Cursor
+       :members:
+ 
+       .. describe:: c[index]
+ 
+          See :meth:`__getitem__`.
+ 
+-      .. automethod:: __getitem__
++      .. automethod:: __getitem__
+\ No newline at end of file
+-- 
+2.5.0
+
