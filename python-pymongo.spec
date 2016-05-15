@@ -9,7 +9,7 @@
 
 Name:           %{?scl_prefix}python-pymongo
 Version:        3.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python driver for MongoDB
 
 Group:          Development/Languages
@@ -97,7 +97,8 @@ rm -rf %{buildroot}
 %{python3_sitearch}/bson
 
 %files doc
-%license LICENSE
+%defattr(-,root,root,-)
+%doc LICENSE
 %doc doc/_build/html/*
 
 %check
@@ -186,7 +187,11 @@ popd
 %{?scl:'}
 
 %changelog
-* Sat Feb 13 2016 Robert Kuska <rkuska@redhat.com> - 3.2.1
+* Wed Apr 27 2016 Charalampos Stratakis <cstratak@redhat.com - 3.2.1-2
+- Changed license tag to doc tag for the LICENSE file in the doc subpackage
+Resolves: rhbz#1330597
+
+* Sat Feb 13 2016 Robert Kuska <rkuska@redhat.com> - 3.2.1-1
 - Update to 3.2.1
 
 * Thu Jan 22 2015 Robert Kuska <rkuska@redhat.com> - 2.7.2-1
