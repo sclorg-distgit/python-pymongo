@@ -1,15 +1,9 @@
 %{?scl:%scl_package python-pymongo}
 %{!?scl:%global pkg_name %{name}}
 
-# Fix private-shared-object-provides error
-# Also fix overrided requires for python(abi)
-#%{?scl:%filter_provides_in %{python3_sitearch}.*\.so$}
-#%{?scl:%filter_from_requires s|python(abi)|%{?scl_prefix}python(abi)|g}
-#%{?scl:%filter_setup}
-
 Name:           %{?scl_prefix}python-pymongo
 Version:        3.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python driver for MongoDB
 
 Group:          Development/Languages
@@ -131,6 +125,15 @@ python3 setup.py test
 %{?scl:'}
 
 %changelog
+* Wed Jun 21 2017 Tomas Orsava <torsava@redhat.com> - 3.4.0-2
+- Removed the commented out filter macros at the top of the specfile.
+  While they were commented out, they still took effect since the macros still
+  expanded. However, they were causing error messages in the buildlog [0] and
+  causing the provides/requires generator script not to finish. Thus the
+  packages were missing some of the required Provides and Requires tags.
+  [0] warning: Ignoring invalid regex ^%%{_scl_prefix}/.*$|%%{_root_sysconfdir}/rpm/macros.rh-python36-config$
+     (% signs were doubled to avoid rpm-lint warnings)
+
 * Fri Jun 16 2017 Tomas Orsava <torsava@redhat.com> - 3.4.0-1
 - Updated to the latest Fedora version 3.4.0
 - Renumbered Patch 1 to 2 to be in line with Fedora
