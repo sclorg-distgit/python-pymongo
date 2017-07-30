@@ -1,0 +1,31 @@
+From 6142f761e7ad7807eba0c5fcdbad78bfe364b01a Mon Sep 17 00:00:00 2001
+From: Shane Harvey <shane.harvey@mongodb.com>
+Date: Mon, 23 Jan 2017 13:59:01 -0800
+Subject: [PATCH] PYTHON-1216 Tests should pass without MongoDB running
+
+---
+ test/__init__.py | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/test/__init__.py b/test/__init__.py
+index be0eea8de..d0123346b 100644
+--- a/test/__init__.py
++++ b/test/__init__.py
+@@ -259,6 +259,8 @@ def pair(self):
+ 
+     @property
+     def has_secondaries(self):
++        if not self.client:
++            return False
+         return bool(len(self.client.secondaries))
+ 
+     def _check_user_provided(self):
+@@ -375,7 +377,7 @@ def require_secondaries_count(self, count):
+         """Run a test only if the client is connected to a replica set that has
+         `count` secondaries.
+         """
+-        sec_count = len(self.client.secondaries)
++        sec_count = 0 if not self.client else len(self.client.secondaries)
+         return self._require(sec_count >= count,
+                              "Need %d secondaries, %d available"
+                              % (count, sec_count))
